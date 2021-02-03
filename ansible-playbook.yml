@@ -6,11 +6,10 @@
     - name: Copy the war file, dockerfile & stack.yml to docker master server
       copy:
         src: /home/ansadmin/trainingwale/
-        dest: /opt/docker/trainingwale
+        dest: /home/ansadmin/trainingwale/
         owner: root
         group: root
         mode: '0777'
-
 - name: "Play 2 Install Python packages and docker image push"
   hosts: docker-master
   become: yes
@@ -27,12 +26,11 @@
       register: out1
     - debug:
         var: out1
-
     - name: "Delete the docker image"
       docker_image:
         state: absent
         force: yes
-        name: 127.0.0.1:5000/trainingwaleapp
+        name: 127.0.0.1:5000/stackdemo
         tag: latest
       register: out2
     - debug:
@@ -40,8 +38,8 @@
 
     - name: Build an image and push it to a private repo
       docker_image:
-        path: /opt/docker/trainingwale
-        name: 127.0.0.1:5000/trainingwaleapp
+        path: /home/ansadmin/trainingwale/
+        name: 127.0.0.1:5000/stackdemo
         tag: latest
         push: yes
         nocache: yes
@@ -58,4 +56,4 @@
       shell: docker stack rm trainingwale
 
     - name: start the stack
-      shell: docker stack deploy --compose-file /opt/docker/trainingwale/trainingwale.yml trainingwale
+      shell: docker stack deploy --compose-file /home/ansadmin/trainingwale/trainingwale.yml trainingwale
